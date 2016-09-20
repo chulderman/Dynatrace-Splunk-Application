@@ -20,9 +20,9 @@ PASSWORD="admin"
 
 with open('DASHBOARD_LIST', 'r') as f:
 	for line in f:
-		create_dashboard(line)
+		run_dashboard(line)
 
-def create_dashboard(dashboard_name):
+def run_dashboard(dashboard_name):
 	xsl_filename = dashboard_name + "_report.xsl"
 	feed_url = "http://"+ DTSERVER + "/rest/management/reports/create/"+ dashboard_name + "?type=XML&format=XML+Export&filter=tf:" + TIMEFRAME
 
