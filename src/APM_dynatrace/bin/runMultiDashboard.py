@@ -3,7 +3,7 @@ import datetime
 import sys
 import subprocess
 from xml.etree import ElementTree
-import urllib
+import requests
 
 from xml.dom import minidom
 
@@ -32,16 +32,15 @@ def run_dashboard(dashboard_name):
 
 	# Set up a HTTPS request with username/password authentication
 	try:
-	  # create a password manager
-	  password_mgr = HTTPPasswordMgrWithDefaultRealm()
-	  # Add the username and password.
-	  password_mgr.add_password(None, feed_url, USERNAME, PASSWORD)
-	  opener = build_opener(HTTPBasicAuthHandler(password_mgr))
-	  file = opener.open(feed_url)
+	  file = requests.get(feed_url, auth=(USERNAME, PASSWORD))
+	  file.raise_for_status()
 
-	except URLError, e:
-	  print 'URLError: "%s"' % e
-	  raise
+	except Exception as e:
+		if(file.status_code==404):
+			print('%s: Page could not be found.' % e.reason)
+		if(file.status_code>=500):
+			print ('%s: Server error [%s]' % (e.reason, manifest_response.status_code))
+		print 'URLError: "%s"' % e
 
 	appdir = os.path.dirname(os.path.dirname(__file__))
 	xsl_file = os.path.join(appdir, "bin", xsl_filename)
